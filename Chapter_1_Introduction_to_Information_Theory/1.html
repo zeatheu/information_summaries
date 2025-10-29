@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Introduction to Information Theory</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="1_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="1_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="1_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="1_files/libs/quarto-html/popper.min.js"></script>
+<script src="1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="1_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="1_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction to Information Theory</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="how-can-we-achieve-perfect-communication-over-an-imperfect-noisy-communication-channel" class="level3">
+<h3 class="anchored" data-anchor-id="how-can-we-achieve-perfect-communication-over-an-imperfect-noisy-communication-channel">1.1 How can we achieve perfect communication over an imperfect, noisy communication channel?</h3>
+<p>Communication systems—whether through telephone lines, spacecraft signals, biological DNA replication, or data storage devices—often face noise and interference that can distort transmitted information. This noise may arise from physical, environmental, or random factors, causing transmitted data (like bits) to differ from what is received. The goal in designing such systems is to minimize the probability of transmission errors to a level that is practically negligible.</p>
+<p>Consider a noisy disk drive that transmits each bit correctly with probability <span class="math inline">\((1−f)\)</span> and incorrectly with probability <span class="math inline">\(f\)</span>.</p>
+<p><img src="1diagram.svg" class="img-fluid" style="width:70.0%"></p>
+<p><em>f</em> is the probability of guessing incorrectly, meaning if <span class="math inline">\(f=0.1\)</span> - 10% of bits are flipped, which is very inefficient for large number of bits.</p>
+<section id="physical-solutions" class="level5">
+<h5 class="anchored" data-anchor-id="physical-solutions">Physical solutions:</h5>
+<ul>
+<li>Use more relieable components in its circuitry</li>
+<li>Eliminate turbulance by removing air between reading head and the track</li>
+<li>Use a larger magnetic patch to repersent a single bit</li>
+<li>Reduce the thermal noise</li>
+</ul>
+</section>
+<section id="system-solutions" class="level5">
+<h5 class="anchored" data-anchor-id="system-solutions">System solutions:</h5>
+<p>Use the binary simmetric channel:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="binary_symmetric_channel.png" class="img-fluid figure-img"></p>
+<figcaption>Binary symmetric channel</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="error-correcting-codes-for-the-binary-symmetric-channel" class="level3">
+<h3 class="anchored" data-anchor-id="error-correcting-codes-for-the-binary-symmetric-channel">1.2 Error-correcting codes for the binary symmetric channel</h3>
+<p>To reduce the error during transmission, we can repeat each bit of our source code, say 3 times (Repetition code <span class="math inline">\(R_3\)</span>)</p>
+<p><img src="R_3_transmission.png" class="img-fluid"></p>
+<p><span class="math inline">\(s\)</span> - source, <span class="math inline">\(t\)</span> - transmitted message, <span class="math inline">\(n\)</span> - noise, <span class="math inline">\(r = t+n\)</span> (using modular arithmetic of 2)</p>
+<p>The optimal way to decode would be by taking one which has a majority vote (eg. <span class="math inline">\(011 \Rightarrow 1\)</span>).</p>
+<p>Consider decoding a single bit <span class="math inline">\(s\)</span>, encoded as <span class="math inline">\(t(s)\)</span> and gave rise to <strong><span class="math inline">\(r\)</span></strong> = <span class="math inline">\(r_1 r_2 r_3\)</span>. By Bayes’ theorem:</p>
+<p><span class="math display">\[ P(s|r_1 r_2 r_3) = \dfrac{P(r_1 r_2 r_3 | s)P(s)}{P(r_1 r_2 r_3)} \]</span> <span class="math display">\[ \Longrightarrow P(s=1|r_1 r_2 r_3) = \dfrac{P(r_1 r_2 r_3 | s=1)P(s=1)}{P(r_1 r_2 r_3)} \quad \text{; same for s=0}\]</span></p>
+<p>The posterior probabilty( <span class="math inline">\(P(s=1|r_1 r_2 r_3)\)</span> ) is determined by:</p>
+<ul>
+<li>prior probabilty (<span class="math inline">\(P(s)\)</span>)</li>
+<li>likelyhood of <span class="math inline">\(s\)</span> (<span class="math inline">\(P(r_1 r_2 r_3 | s=1)\)</span>)</li>
+</ul>
+<p>Since constant <span class="math inline">\(P(r_1 r_2 r_3)\)</span> is not needed to decode, so <span class="math inline">\(\hat{s} = 0\)</span> if <span class="math inline">\(P(s=0|r) &gt; P(s=1|r)\)</span> and <span class="math inline">\(\hat{s} = 1\)</span> otherwise. We assume that <span class="math inline">\(P(s=0) = P(s=1) = 0.5\)</span> and noise level <span class="math inline">\(f&lt;0.5\)</span>, so the likelyhood is <span class="math display">\[ P(r|s) = P(r|t(s)) = \prod_{n=1}^NP(r_n|t_n(s)) \quad \text{,} \quad N=3\]</span> <span class="math display">\[ \Longrightarrow P(r_n|t_n) = \begin{cases} (1-f), &amp; \text{if } r_n=t_n,\\ f, &amp; \text{if } r_n \neq t_n. \end{cases} \]</span></p>
+<p>So, the ratio of likelyhoods is <span class="math display">\[ \dfrac{P(r|s=1)}{P(r|s=0)} = \prod_{n=1}^N\dfrac{P(r_n|t_n(1))}{P(r_n|t_n(0))} \text{;} \]</span></p>
+<p>each factor <span class="math inline">\(\dfrac{P(r_n|t_n(1))}{P(r_n|t_n(0))}\)</span> equals <span class="math inline">\(\dfrac{(1-f)}{f}\)</span> if <span class="math inline">\(r_n =1\)</span> and <span class="math inline">\(\dfrac{f}{1-f}\)</span> if <span class="math inline">\(r_n = 0\)</span>. The ratio <span class="math inline">\(γ ≡ \dfrac{(1−f)}{f}\)</span> is greater than 1, since <span class="math inline">\(f &lt; 0.5\)</span>, so the winning hypothesis is the one with the most ‘votes’, each vote counting for a factor of <span class="math inline">\(γ\)</span> in the likelihood ratio.</p>
+<p>Using <span class="math inline">\(R_3\)</span> code, we can reduce the error probability to <span class="math inline">\(p_b \approx 0.03\)</span> per bit. But while doing that, we increased the rate by three times, meaning we would use three times the original storage. So it’s not efficient storage-wise and it’s not that helpful in reducing error probability</p>
+<p>To reduce the error probability and use storage more efficiently, we can use <em>block code</em>.</p>
+<p>A block code is a rule for converting a sequence of source bits s, of length K, say, into a transmitted sequence t of length N bits. To add redundancy, we make N greater than K. The extra bits are called <em>parity-check bits</em>. Example of a block code the (7, 4) <em>Hamming code</em>, transmits <span class="math inline">\(N=7\)</span> bits for evey <span class="math inline">\(K=4\)</span> source bits.</p>
+<p><img src="hamming_code.png" class="img-fluid"></p>
+<p>The first four bits, <span class="math inline">\(t_1 t_2 t_3 t_4\)</span>, are set equal to the four source bits, <span class="math inline">\(s_1 s_2 s_3 s_4\)</span>. Other three are set so that the parity within each circle is even:</p>
+<ul>
+<li>the first parity-check bit is the parity of the first three source bits</li>
+<li>the second is the parity of the last three</li>
+<li>the third parity bit is the parity of source bits one, three and four</li>
+</ul>
+<p>Because the Hamming code is a linear code, it can be written compactly in terms of matrices as follows. The transmitted codeword t is obtained from the source sequence s by a linear operation, <span class="math display">\[ t= G^T s \text{,}\]</span> where <span class="math inline">\(G\)</span> is the <em>generator matrix</em> of the code,</p>
+<p><span class="math display">\[ G^T = \begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 \\
+1 &amp; 1 &amp; 1 &amp; 0 \\
+0 &amp; 1 &amp; 1 &amp; 1 \\
+1 &amp; 0 &amp; 1 &amp; 1
+\end{bmatrix} \]</span></p>
+<section id="decoding-the-74-hamming-code" class="level5">
+<h5 class="anchored" data-anchor-id="decoding-the-74-hamming-code">Decoding the (7,4) Hamming code</h5>
+<p>If we assume that all source vectors equally likely, the decoding process involves finding the most likely transmitted codeword given the received vector. This can be achieved using the <em>syndrome decoding</em> method.</p>
+<p>When a received vector <span class="math inline">\(r\)</span> is obtained, we check if any of the three parity checks are violated:</p>
+<ol type="1">
+<li>First check: <span class="math inline">\(z_1 = r_1 + r_2 + r_3 + r_5\)</span></li>
+<li>Second check: <span class="math inline">\(z_2 = r_2 + r_3 + r_4 + r_6\)</span></li>
+<li>Third check: <span class="math inline">\(z_3 = r_1 + r_3 + r_4 + r_7\)</span></li>
+</ol>
+<p>The three-bit number <span class="math inline">\(z = (z_1,z_2,z_3)\)</span> is called the syndrome. If <span class="math inline">\(z = 000\)</span>, no error is detected. Otherwise, the syndrome indicates which bit was likely flipped:</p>
+<ul>
+<li>001: bit 7 was flipped</li>
+<li>010: bit 6 was flipped</li>
+<li>011: bit 4 was flipped</li>
+<li>100: bit 5 was flipped</li>
+<li>101: bit 1 was flipped</li>
+<li>110: bit 2 was flipped</li>
+<li>111: bit 3 was flipped</li>
+</ul>
+<p>This code can correct any single-bit error and <em>detect</em> all two-bit errors.</p>
+<p>The computaion of the syndrome vector is a linear operation. If we define a <span class="math inline">\(3 \times 4\)</span> matrix <span class="math inline">\(P\)</span> such that <span class="math display">\[ G^T = \begin{bmatrix}
+I_4 \\
+P
+\end{bmatrix} \]</span></p>
+<p>where <span class="math inline">\(I_4\)</span> is the <span class="math inline">\(4 \times 4\)</span> identity matrix, then the syndrome vector is <span class="math inline">\(z= Hr\)</span> where the parity check matrix is given by <span class="math inline">\(H = \begin{bmatrix} -P &amp; I_3 \end{bmatrix}\)</span>; in modulo-2 (<span class="math inline">\(-1 \equiv 1\)</span>), so</p>
+<p><span class="math display">\[ H = \begin{bmatrix} P &amp; I_3 \end{bmatrix} = \begin{bmatrix} 1 &amp; 1 &amp; 1 &amp; 0 &amp; 1&amp; 0 &amp;0\\ 0&amp;1&amp;1&amp;1&amp;0&amp;1&amp;0 \\ 1&amp;0&amp;1&amp;1&amp;0&amp;0&amp;1 \end{bmatrix} \]</span></p>
+<p>All the codewords <span class="math inline">\(t=G^T s\)</span> of the code satisfy <span class="math display">\[ Ht = \begin{bmatrix} 0\\0\\0 \end{bmatrix} \text{.} \]</span></p>
+<p>In the Hamming code, the probability of block error is the probability that two or more bits are flipped. This probability scales as <span class="math inline">\(O(f^2)\)</span>, as that of repetition code <span class="math inline">\(R_3\)</span>. But the communication rate of Hamming code is $R = 4/7 $.</p>
+</section>
+</section>
+<section id="what-performance-can-the-best-codes-achieve" class="level3">
+<h3 class="anchored" data-anchor-id="what-performance-can-the-best-codes-achieve">1.3 What performance can the best codes achieve?</h3>
+<p>Shannon’s noisy‑channel coding theorem (1948) shows that for any discrete memoryless channel there exists a number C, the channel capacity, with the following properties: for any transmission rate R &lt; C one can construct codes and decoding rules that make the probability of decoding error arbitrarily small as the block length goes to infinity; conversely, any rate R &gt; C cannot achieve vanishing error probability.</p>
+<p>For the binary symmetric channel (flip probability f) the capacity is <span class="math display">\[
+C \;=\; 1 - H_2(f)
+\]</span> where <span class="math display">\[
+H_2(f) \;=\; -f\log_2 f - (1-f)\log_2(1-f)
+\]</span> is the binary entropy (bits per channel use). Shannon’s original proof used a random‑coding and typical‑set argument and is existence‑based: it guarantees codes achieving rates up to C but does not give an explicit low‑complexity construction.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
