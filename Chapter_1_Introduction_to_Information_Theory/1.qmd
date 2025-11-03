@@ -3,15 +3,19 @@ title: Introduction to Information Theory
 execute:
   echo: false
 format: 
+  revealjs:
+    toc: true
   pdf: 
     toc: true
   html: 
     toc: true
-jupyter: python3
+#jupyter: python3
 ---
 
-### 1.1 How can we achieve perfect communication over an imperfect, noisy communication channel?
+## 1.1 How can we achieve perfect communication over an imperfect, *noisy* communication channel? ::{.smaller}
 Communication systems—whether through telephone lines, spacecraft signals, biological DNA replication, or data storage devices—often face noise and interference that can distort transmitted information. This noise may arise from physical, environmental, or random factors, causing transmitted data (like bits) to differ from what is received. The goal in designing such systems is to minimize the probability of transmission errors to a level that is practically negligible.
+
+## Modeling Noise
 
 Consider a noisy disk drive that transmits each bit correctly with
 probability $(1−f)$ and incorrectly with probability $f$.
@@ -20,19 +24,23 @@ probability $(1−f)$ and incorrectly with probability $f$.
 
 *f* is the probability of guessing incorrectly, meaning if $f=0.1$ - 10% of bits are flipped, which is very inefficient for large number of bits. 
 
-##### Physical solutions:
+## Physical solutions:
 * Use more relieable components in its circuitry
 * Eliminate turbulance by removing air between reading head and the track
 * Use a larger magnetic patch to repersent a single bit
 * Reduce the thermal noise
 
-##### System solutions:
+## System solutions:
 Use the binary simmetric channel:
 
 ![Binary symmetric channel](binary_symmetric_channel.png)
 
+## Likelihood
 
-### 1.2 Error-correcting codes for the binary symmetric channel
+:::{.callout-note title="Maximum Likelihood"}
+:::
+
+## 1.2 Error-correcting codes for the binary symmetric channel{.smaller}
 
 To reduce the error during transmission, we can repeat each bit of our source code, say 3 times (Repetition code $R_3$)
 
@@ -47,10 +55,13 @@ Consider decoding a single bit $s$, encoded as $t(s)$ and gave rise to **$r$** =
 $$ P(s|r_1 r_2 r_3) = \dfrac{P(r_1 r_2 r_3 | s)P(s)}{P(r_1 r_2 r_3)} $$
 $$ \Longrightarrow P(s=1|r_1 r_2 r_3) = \dfrac{P(r_1 r_2 r_3 | s=1)P(s=1)}{P(r_1 r_2 r_3)} \quad \text{; same for s=0}$$
 
-The posterior probabilty( $P(s=1|r_1 r_2 r_3)$ ) is determined by:
+## Posterior probability {.smaller .scrollable}
+
+The posterior probability( $P(s=1|r_1 r_2 r_3)$ ) is determined by:
 
 * prior probabilty ($P(s)$)
 * likelyhood of $s$ ($P(r_1 r_2 r_3 | s=1)$)
+
 
 Since constant $P(r_1 r_2 r_3)$ is not needed to decode, so $\hat{s} = 0$ if $P(s=0|r) > P(s=1|r)$ and $\hat{s} = 1$ otherwise. We assume that $P(s=0) = P(s=1) = 0.5$ and noise level $f<0.5$,  so the likelyhood is 
 $$ P(r|s) = P(r|t(s)) = \prod_{n=1}^NP(r_n|t_n(s)) \quad \text{,} \quad N=3$$
@@ -61,7 +72,11 @@ $$ \dfrac{P(r|s=1)}{P(r|s=0)} = \prod_{n=1}^N\dfrac{P(r_n|t_n(1))}{P(r_n|t_n(0))
 
 each factor $\dfrac{P(r_n|t_n(1))}{P(r_n|t_n(0))}$ equals $\dfrac{(1-f)}{f}$ if $r_n =1$ and $\dfrac{f}{1-f}$ if $r_n = 0$. The ratio $γ ≡ \dfrac{(1−f)}{f}$ is greater than 1, since $f < 0.5$, so the winning hypothesis is the one with the most ‘votes’, each vote counting for a factor of $γ$ in the likelihood ratio.
 
+## $R_3$ performance
+
 Using $R_3$ code, we can reduce the error probability to $p_b \approx 0.03$ per bit. But while doing that, we increased the rate by three times, meaning we would use three times the original storage. So it's not efficient storage-wise and it's not that helpful in reducing error probability
+
+## Block code
 
 To reduce the error probability and use storage more efficiently, we can use *block code*.
 
@@ -69,11 +84,15 @@ A block code is a rule for converting a sequence of source bits s, of length K, 
 
 ![](hamming_code.png)
 
+##
+
 The first four bits, $t_1 t_2 t_3 t_4$, are set equal to the four source bits, $s_1 s_2 s_3 s_4$. Other three are set so that the parity within each circle is even:
 
 - the first parity-check bit is the parity of the first three source bits
 - the second is the parity of the last three
 - the third parity bit is the parity of source bits one, three and four
+
+## {.smaller}
 
 Because the Hamming code is a linear code, it can be written compactly in terms of matrices as follows. The transmitted codeword t is obtained from the source sequence s by a linear operation,
 $$ t= G^T s \text{,}$$
@@ -89,7 +108,7 @@ $$ G^T = \begin{bmatrix}
 1 & 0 & 1 & 1 
 \end{bmatrix} $$
 
-##### Decoding the (7,4) Hamming code
+## Decoding the (7,4) Hamming code
 If we assume that all source vectors equally likely, the decoding process involves finding the most likely transmitted codeword given the received vector. This can be achieved using the *syndrome decoding* method.
 
 When a received vector $r$ is obtained, we check if any of the three parity checks are violated:
@@ -98,7 +117,11 @@ When a received vector $r$ is obtained, we check if any of the three parity chec
 2. Second check: $z_2 = r_2 + r_3 + r_4 + r_6$
 3. Third check: $z_3 = r_1 + r_3 + r_4 + r_7$
 
-The three-bit number $z = (z_1,z_2,z_3)$ is called the syndrome. If $z = 000$, no error is detected. Otherwise, the syndrome indicates which bit was likely flipped:
+The three-bit number $z = (z_1,z_2,z_3)$ is called the syndrome. 
+
+## Syndrome
+
+If $z = 000$, no error is detected. Otherwise, the syndrome indicates which bit was likely flipped:
 
 - 001: bit 7 was flipped
 - 010: bit 6 was flipped
@@ -110,6 +133,8 @@ The three-bit number $z = (z_1,z_2,z_3)$ is called the syndrome. If $z = 000$, n
 
 This code can correct any single-bit error and *detect* all two-bit errors.
 
+## 
+
 The computaion of the syndrome vector is a linear operation. If we define a $3 \times 4$ matrix $P$ such that
 $$ G^T = \begin{bmatrix}
 I_4 \\
@@ -120,12 +145,14 @@ where $I_4$ is the $4 \times 4$ identity matrix, then the syndrome vector is $z=
 
 $$ H = \begin{bmatrix} P & I_3 \end{bmatrix} = \begin{bmatrix} 1 & 1 & 1 & 0 & 1& 0 &0\\ 0&1&1&1&0&1&0 \\ 1&0&1&1&0&0&1 \end{bmatrix} $$
 
+##
+
 All the codewords $t=G^T s$ of the code satisfy 
 $$ Ht = \begin{bmatrix} 0\\0\\0 \end{bmatrix} \text{.} $$
 
 In the Hamming code, the probability of block error is the probability that two or more bits are flipped. This probability scales as $O(f^2)$, as that of repetition code $R_3$. But the communication rate of Hamming code is $R = 4/7 $. 
 
-### 1.3 What performance can the best codes achieve?
+## 1.3 What performance can the best codes achieve? {.smaller}
 Shannon's noisy‑channel coding theorem (1948) shows that for any discrete memoryless channel there exists a number C, the channel capacity, with the following properties: for any transmission rate R < C one can construct codes and decoding rules that make the probability of decoding error arbitrarily small as the block length goes to infinity; conversely, any rate R > C cannot achieve vanishing error probability.
 
 For the binary symmetric channel (flip probability f) the capacity is
