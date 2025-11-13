@@ -39,10 +39,11 @@ The **Bayesian** interpretation is more general, using probability to describe a
 ### 2.3 Forward and Inverse Probabilities
 
 Probability calculations can be categorized as either forward or inverse.
+
 * **Forward probability** problems involve a **generative model** where the parameters are known, and the goal is to calculate the probability distribution of the data or outcomes that result from the process.
 * **Inverse probability** problems reverse this: given the observed data, the goal is to infer the conditional probability of the unobserved variables or parameters of the generative model.
 
-Inverse probability problems invariably require the use of **Bayes' theorem**]. In this context, the terms in Bayes' theorem are given specific names:
+Inverse probability problems invariably require the use of **Bayes' theorem**. In this context, the terms in Bayes' theorem are given specific names:
 
 $$\text{posterior} = \frac{\text{likelihood} \times \text{prior}}{\text{evidence}}$$ 
 
@@ -63,11 +64,11 @@ The **Shannon information content** $h(x)$ of an outcome $x$ quantifies its surp
 
 $$h(x) = \log_2 \frac{1}{P(x)}$$ 
 
-This quantity is measured in **bits**. An improbable outcome (low $P(x)$) has high information content, while a common outcome (high $P(x)$) has low information content].
+This quantity is measured in **bits**. An improbable outcome (low $P(x)$) has high information content, while a common outcome (high $P(x)$) has low information content.
 
 The **entropy** $H(X)$ of the entire ensemble is the *average* or *expected value* of the Shannon information content. It is also known as the uncertainty of the ensemble.
 
-$$H(X) = \sum_{x \in \mathcal{A}_X} P(x) \log_2 \frac{1}{P(x)}$$ , 479]
+$$H(X) = \sum_{x \in \mathcal{A}_X} P(x) \log_2 \frac{1}{P(x)}$$ 
 
 Entropy is always non-negative ($H(X) \ge 0$) and is at its maximum when the probability distribution $P(x)$ is uniform. The **joint entropy** $H(X, Y)$ is calculated using the same formula but with the joint probability $P(x,y)$. Entropy is additive for independent variables: $H(X, Y) = H(X) + H(Y)$ if and only if $X$ and $Y$ are independent.
 
@@ -78,6 +79,7 @@ Entropy is always non-negative ($H(X) \ge 0$) and is at its maximum when the pro
 The entropy of an ensemble can be computed recursively by decomposing the process into stages. The total entropy is the sum of the entropies of each stage, where the entropy of any subsequent stage is weighted by the probability that that stage is even reached.
 
 For example, consider an ensemble with probabilities $\mathbf{p} = \{1/2, 1/4, 1/4\}$. This can be viewed as a two-stage process:
+
 1.  A first choice between the first outcome and the other two, with probabilities $\{1/2, 1/2\}$. The entropy of this stage is $H(1/2, 1/2) = 1$ bit.
 2.  *If* the first outcome is not chosen (which happens with probability 1/2), a second choice is made between the remaining two outcomes, which have conditional probabilities $\{1/2, 1/2\}$. The entropy of this stage is also $H(1/2, 1/2) = 1$ bit.
 
@@ -95,7 +97,7 @@ $$D_{KL}(P||Q) = \sum_x P(x) \log_2 \frac{P(x)}{Q(x)}$$
 
 $$D_{KL}(P||Q) \ge 0$$
 
-Equality holds if and only if $P(x) = Q(x)$ for all $x$]. The KL divergence is not a true distance measure because it is not symmetric; that is, $D_{KL}(P||Q) \neq D_{KL}(Q||P)$.
+Equality holds if and only if $P(x) = Q(x)$ for all $x$. The KL divergence is not a true distance measure because it is not symmetric; that is, $D_{KL}(P||Q) \neq D_{KL}(Q||P)$.
 
 ---
 
