@@ -3,46 +3,70 @@ title: 2 — Probability, Entropy, and Inference
 execute:
   echo: false
 format:
+  revealjs:
+    toc: true
+    smaller: true
+    scrollable: true
   pdf: 
     toc: true
 ---
-### 2.1 Probabilities and Ensembles
+## 2.1 Probabilities and Ensembles
 
-An **ensemble** $X$ is a framework for a random variable, defined by a set of possible outcomes, or alphabet, $\mathcal{A}_X = \{a_1, a_2, ..., a_I\}$, and their corresponding probabilities, $\mathcal{P}_X = \{p_1, p_2, ..., p_I\}$. These probabilities must be non-negative ($p_i \ge 0$) and sum to unity ($\sum P(x=a_i) = 1$). The probability of a subset of outcomes $T$ is the sum of the probabilities of all outcomes within that subset.
+An **ensemble** $X$ is a framework for a random variable, defined by a set of possible outcomes, or alphabet, $A_X = \{a_1, a_2, ..., a_I\}$, and their corresponding probabilities, $P_X = \{p_1, p_2, ..., p_I\}$. These probabilities must be non-negative ($p_i \ge 0$) and sum to unity ($\sum P(x=a_i) = 1$). The probability of a subset of outcomes $T$ is the sum of the probabilities of all outcomes within that subset.
 
+## 
 A **joint ensemble** $XY$ involves outcomes that are ordered pairs $(x, y)$, described by a **joint probability** $P(x,y)$. From this, a **marginal probability** $P(x)$ can be obtained by summing over all possibilities of $y$: $P(x) = \sum_y P(x,y)$.
 
+## 
 The **conditional probability** $P(x|y)$ represents the probability of outcome $x$ given that $y$ has occurred. It is defined as:
 
 $$P(x|y) = \frac{P(x,y)}{P(y)}$$
 
+##
 This definition is valid only if $P(y) \neq 0$. These concepts lead to three foundational rules of probability theory:
 
 1.  **The Product Rule:** This rule, also known as the chain rule, restates the definition of conditional probability: $P(x,y) = P(x|y)P(y) = P(y|x)P(x)$.
 2.  **The Sum Rule:** This rule shows how to find a marginal probability from conditional probabilities: $P(x) = \sum_y P(x,y) = \sum_y P(x|y)P(y)$.
 3.  **Bayes' Theorem:** This theorem is derived directly from the product rule and is essential for inference. It inverts the conditional probability:
     $$P(y|x) = \frac{P(x|y)P(y)}{P(x)}$$
-    The denominator $P(x)$ can be expanded using the sum rule, $P(x) = \sum_{y'} P(x|y')P(y')$.
+
+##
+The denominator $P(x)$ can be expanded using the sum rule, $P(x) = \sum_{y'} P(x|y')P(y')$.
 
 Finally, two variables $X$ and $Y$ are **independent** if and only if their joint probability is the simple product of their marginal probabilities: $P(x,y) = P(x)P(y)$.
 
 ---
 
-### 2.2 The Meaning of Probability
+## 2.2 The Meaning of Probability
 
 Probability can be interpreted in two main ways. The **frequentist** interpretation confines probability to describing the long-run frequencies of outcomes in repeatable random experiments.
 
 The **Bayesian** interpretation is more general, using probability to describe a **degree of belief** in any proposition, even one that is not a repeatable random variable. Examples include the probability that a particular suspect is guilty or that a historical event occurred. This is also known as the subjective interpretation, as the probabilities depend on assumptions. The **Cox axioms** provide a formal foundation for this view, demonstrating that if degrees of belief satisfy basic consistency rules, they can be mapped directly to the laws of probability.
 
+##
+Using $B(x)$ to denote the "degree of belief in proposition $x$" and $\overline{x}$ for its negation, the axioms are:
+
+* **Axiom 1: Ordering**
+    Degrees of belief can be ordered. If the belief in $x$ is greater than the belief in $y$, and the belief in $y$ is greater than the belief in $z$, then the belief in $x$ must be greater than the belief in $z$. This allows beliefs to be mapped onto real numbers.
+
+* **Axiom 2: Negation**
+    The degree of belief in a proposition $x$ and its negation $\overline{x}$ are related. There is a function $f$ such that $B(x) = f[B(\overline{x})]$.
+
+* **Axiom 3: Conjunction**
+    The degree of belief in a conjunction of propositions ($x$ AND $y$) is related to the belief in the conditional proposition ($x$ given $y$) and the belief in $y$. There is a function $g$ such that $B(x,y) = g[B(x|y), B(y)]$.
+
+If a set of beliefs satisfies these axioms, they can be represented by probabilities $P(x)$ that obey the standard rules, such as $P(x) = 1 - P(\overline{x})$ and the product rule $P(x,y) = P(x|y)P(y)$.
+
 ---
 
-### 2.3 Forward and Inverse Probabilities
+## 2.3 Forward and Inverse Probabilities .smaller
 
 Probability calculations can be categorized as either forward or inverse.
 
 * **Forward probability** problems involve a **generative model** where the parameters are known, and the goal is to calculate the probability distribution of the data or outcomes that result from the process.
 * **Inverse probability** problems reverse this: given the observed data, the goal is to infer the conditional probability of the unobserved variables or parameters of the generative model.
 
+## 
 Inverse probability problems invariably require the use of **Bayes' theorem**. In this context, the terms in Bayes' theorem are given specific names:
 
 $$\text{posterior} = \frac{\text{likelihood} \times \text{prior}}{\text{evidence}}$$ 
@@ -52,13 +76,14 @@ $$\text{posterior} = \frac{\text{likelihood} \times \text{prior}}{\text{evidence
 * **Posterior Probability** $P(\theta|D)$: This is the updated probability of the parameter $\theta$ *after* observing the data $D$.
 * **Evidence** $P(D)$: This is the marginal probability of the data, $P(D) = \sum_{\theta'} P(D|\theta')P(\theta')$, which serves as a normalization constant.
 
+##
 When using this framework to make predictions, the correct Bayesian approach is not to simply choose the single most plausible hypothesis. Instead, one must **marginalize** (use the sum rule) over all possible values of the parameter, weighting each one by its posterior probability.
 
 This approach adheres to the **likelihood principle**, which states that all inferences should depend *only* on the likelihood function $P(d_1 | \theta)$ for the data $d_1$ that was *actually observed*. The probabilities of other outcomes that *could have* happened but did not are irrelevant to the inference.
 
 ---
 
-### 2.4 Definition of Entropy and Related Functions
+## 2.4 Definition of Entropy and Related Functions
 
 The **Shannon information content** $h(x)$ of an outcome $x$ quantifies its surprisal and is defined as:
 
@@ -66,6 +91,7 @@ $$h(x) = \log_2 \frac{1}{P(x)}$$
 
 This quantity is measured in **bits**. An improbable outcome (low $P(x)$) has high information content, while a common outcome (high $P(x)$) has low information content.
 
+##
 The **entropy** $H(X)$ of the entire ensemble is the *average* or *expected value* of the Shannon information content. It is also known as the uncertainty of the ensemble.
 
 $$H(X) = \sum_{x \in \mathcal{A}_X} P(x) \log_2 \frac{1}{P(x)}$$ 
@@ -74,7 +100,7 @@ Entropy is always non-negative ($H(X) \ge 0$) and is at its maximum when the pro
 
 ---
 
-### 2.5 Decomposability of the Entropy
+## 2.5 Decomposability of the Entropy
 
 The entropy of an ensemble can be computed recursively by decomposing the process into stages. The total entropy is the sum of the entropies of each stage, where the entropy of any subsequent stage is weighted by the probability that that stage is even reached.
 
@@ -87,7 +113,7 @@ The total entropy is the sum of the entropy from stage 1 and the weighted entrop
 
 ---
 
-### 2.6 Gibbs' Inequality
+## 2.6 Gibbs' Inequality
 
 The **relative entropy**, or **Kullback-Leibler (KL) divergence** $D_{KL}(P||Q)$, measures the inefficiency of assuming a distribution is $Q$ when the true distribution is $P$. It is defined as:
 
@@ -101,7 +127,7 @@ Equality holds if and only if $P(x) = Q(x)$ for all $x$. The KL divergence is no
 
 ---
 
-### 2.7 Jensen's Inequality for Convex Functions
+## 2.7 Jensen's Inequality for Convex Functions
 
 A function $f(x)$ is **convex** (or "convex-smile") if every chord drawn between two points on the function's graph lies on or above the function itself. Examples include $x^2$, $e^x$, and $x \log x$.
 
