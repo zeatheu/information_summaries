@@ -1,0 +1,275 @@
+---
+title: "More about Inference"
+format: 
+    revealjs: 
+        smaller: true
+
+---
+
+## Chapter Overview
+
+**Key Message**: Bayes' theorem provides a principled approach to inference
+
+- One unique answer to well-posed problems
+- Assumptions made explicit and testable
+
+---
+
+![](/files_necessary/1.png)
+
+---
+
+## Example 1: Particle Decay Problem
+
+**Setup**: Unstable particles decay at distance $x$ with exponential distribution, characteristic length $\lambda$
+
+- Decay only observable in window: $x \in [1, 20]$ cm
+- Observe $N$ decays at locations $\{x_1, \ldots, x_N\}$
+- **Question**: What is $\lambda$?
+
+---
+
+## Particle Decay: Traditional Approach
+
+**Problems with classical methods**:
+
+- Sample mean $\bar{x}$ works for $\lambda \gg 20$ cm
+- Fails when truncation matters
+- Need different estimators for different regimes
+- No general solution
+
+---
+
+## Particle Decay: Bayesian Solution
+
+**Step 1**: Write probability of one data point
+
+$$P(x | \lambda) = \frac{1}{\lambda Z(\lambda)} e^{-x/\lambda} \quad \text{for } 1 < x < 20$$
+
+where $Z(\lambda) = e^{-1/\lambda} - e^{-20/\lambda}$
+
+---
+
+## Particle Decay: Apply Bayes' Theorem
+
+**Step 2**: Use Bayes' theorem
+
+$$P(\lambda | \{x_1, \ldots, x_N\}) \propto \frac{1}{(\lambda Z(\lambda))^N} \exp\left(-\sum_{n=1}^N x_n/\lambda\right) P(\lambda)$$
+
+
+---
+
+## Particle Decay: Understanding the Likelihood
+
+:::: {.columns}
+::: {.column width="50%"}
+**As function of $x$** (fixed $\lambda$):
+- Familiar exponential curves
+- Each normalized to area 1
+:::
+
+::: {.column width="50%"}
+**As function of $\lambda$** (fixed $x$):
+- A peak emerges!
+- This is the likelihood
+:::
+::::
+
+---
+
+
+## Example 2: The Bent Coin
+
+**Setup**: Coin tossed $F$ times, observe sequence $s$
+
+- $F_a$ heads, $F_b$ tails
+- **Questions**: 
+  1. What is the bias $p_a$?
+  2. What's probability next toss is heads?
+
+---
+
+## Bent Coin: Model Specification
+
+**Likelihood**:
+$$P(s | p_a, F, H_1) = p_a^{F_a}(1-p_a)^{F_b}$$
+
+**Prior** (uniform):
+$$P(p_a | H_1) = 1, \quad p_a \in [0,1]$$
+
+---
+
+## Bent Coin: Posterior Distribution
+
+**By Bayes' theorem**:
+$$P(p_a | s, F, H_1) = \frac{p_a^{F_a}(1-p_a)^{F_b}}{P(s|F,H_1)}$$
+
+**Normalizing constant** (Beta integral):
+$$P(s|F,H_1) = \frac{F_a! F_b!}{(F_a + F_b + 1)!}$$
+
+---
+
+## Bent Coin: Example Solution
+
+**Data**: $s = aba$ (so $F_a = 2$, $F_b = 1$, $F = 3$)
+
+**Posterior**: $P(p_a | s) \propto p_a^2(1-p_a)$
+
+For Beta($\alpha,\beta$):
+$$
+ p_{MAP} = \frac{\alpha - 1}{\alpha + \beta - 2}
+$$
+​Here: 
+
+$\alpha = 3, \beta = 2$ 
+$$p_{\text{MAP}} = \frac{2}{3} $$
+
+- **Most probable value**: $p_a = 2/3$
+
+---
+
+## Bent Coin: Another Example
+
+**Data**: $s = bbb$ (so $F_a = 0$, $F_b = 3$, $F = 3$)
+
+**Posterior**: $P(p_a | s) \propto (1-p_a)^3$
+
+- **Most probable value**: $p_a = 0$
+
+---
+
+## Bent Coin: Making Predictions
+
+**Predict next toss** by integrating over uncertainty:
+
+$$P(a | s, F) = \int dp_a \, p_a \, P(p_a | s, F)$$
+
+**Result** (Laplace's rule):
+$$P(a | s, F) = \frac{F_a + 1}{F_a + F_b + 2}$$
+
+---
+
+![](/files_necessary/2.png)
+
+---
+
+## Example 3: Legal Evidence
+
+**Crime scene**: Two blood traces found
+
+- Type O (common, 60% frequency)
+- Type AB (rare, 1% frequency)
+
+**Suspect Oliver** has type O blood
+
+**Question**: Does this evidence favor Oliver being present?
+
+---
+
+## Legal Evidence: Setting Up
+
+**Two hypotheses**:
+
+- $S$: Oliver and one unknown person present
+- $\bar{S}$: Two unknown people present
+
+**We need**: Likelihood ratio $\frac{P(D|S)}{P(D|\bar{S})}$
+
+---
+
+## Legal Evidence: Computing Likelihoods
+
+**Given $S$** (Oliver present):
+$$P(D|S) = p_{AB} = 0.01$$
+
+One trace is Oliver's (type O), need one type AB person
+
+**Given $\bar{S}$** (two unknowns):
+$$P(D|\bar{S}) = 2 \cdot p_O \cdot p_{AB} = 2 \times 0.6 \times 0.01 = 0.012$$
+
+---
+
+## Legal Evidence: The Answer
+
+**Likelihood ratio**:
+$$\frac{P(D|S)}{P(D|\bar{S})} = \frac{0.01}{0.012} = 0.83$$
+
+**Surprising result**: Evidence *weakly favors* Oliver's absence!
+
+Finding common blood type at scene doesn't implicate someone with that type
+
+---
+
+## Legal Evidence: General Formula
+
+With $n_O$ type O traces and $n_{AB}$ type AB traces:
+
+$$\frac{P(n_O, n_{AB} | S)}{P(n_O, n_{AB} | \bar{S})} = \frac{n_O/N}{p_O}$$
+
+**Key insight**: Compare frequency in data vs. population
+
+- More type O than expected → evidence for Oliver
+- Less type O than expected → evidence against Oliver
+- Exactly as expected → no evidence either way
+
+---
+
+![](/files_necessary/3.png)
+
+---
+
+## Example 4: Three Doors Problem
+
+**Game show rules**:
+
+1. Prize behind one of three doors
+2. Contestant picks door 1
+3. Host opens door 3 (no prize)
+4. Contestant can stick or switch
+
+**Question**: Stick with door 1 or switch to door 2?
+
+---
+
+## Three Doors: Setup
+
+**Prior probabilities** (equiprobable):
+$$P(H_1) = P(H_2) = P(H_3) = 1/3$$
+
+**Likelihoods** (host opens door 3):
+
+- $P(D=3|H_1) = 1/2$ (host has free choice)
+- $P(D=3|H_2) = 1$ (host forced to open 3)
+- $P(D=3|H_3) = 0$ (can't reveal prize)
+
+---
+
+## Three Doors: Solution
+
+**Apply Bayes' theorem**:
+$$P(H_i|D=3) = \frac{P(D=3|H_i) \cdot P(H_i)}{P(D=3)}$$
+
+**Results**:
+
+- $P(H_1|D=3) = 1/3$ (your original choice)
+- $P(H_2|D=3) = 2/3$ (the other door)
+- $P(H_3|D=3) = 0$ (eliminated)
+
+**Answer**: SWITCH! Doubles your chances!
+
+---
+
+## Three Doors: Earthquake Variant
+
+**Different scenario**: Earthquake randomly opens door 3
+
+- No intentional avoidance of prize
+- Just happens to not reveal prize
+
+**Key difference**: $P(D|H_1) = P(D|H_2)$ by symmetry
+
+**New result**: $P(H_1|D) = P(H_2|D) = 1/2$
+
+Now it doesn't matter if you switch!
+
+---
