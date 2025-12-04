@@ -1,0 +1,365 @@
+---
+title: "4. The Source Coding Theorem"
+format:
+  revealjs:
+    toc: true
+    smaller: true
+    scrollable: true
+
+---
+
+## 4.1 How to measure the information content of a random variable?
+*Reminders:*
+
+An ensemble X is a denoted by ($x, A_X, P_X$), where the outcome $x$ is the value of a random variable, which takes one of a set of possible values $A_X = \{a_1, a_2, \dots\}$ having probabilites $P_X = \{p_1, p_2, \dots \}$ with $P(x=a_i) = p_i$, $p_i \geq 0$ and $\sum_{a_i \in A_X} P(x=a_i) = 1$
+
+Shannon information content:
+$$ h(x=a_i) \equiv \log_{2} \frac{1}{p_i} $$
+
+Entropy of the ensemble:
+$$ H(X) = \sum_i p_i\log_{2} \frac{1}{p_i} $$
+
+## 
+### Information content of independent random variables
+
+> Why are we using $\log 1/p_i$ to measure information content?
+
+The definition of independence is that the probability distribution is separable into a product:
+
+$$P(x,y) = P(x)P(y)$$
+
+Good thing about $\log$ functions is the additive property of profucts of varables. So or independent random variables $x$ and $y$, the information gained when we learn $x$ and $y$ should equal the sum of the information gained if $x$ alone were learned and the information gained if $y$ alone were learned.
+
+##
+The Shannon information content of the outcome $x$, $y$ is
+
+$$h(x,y) = \log\frac{1}{P(x,y)} = \log\frac{1}{P(x)P(y)} = \log\frac{1}{P(x)} + \log \frac{1}{P(y)}$$ 
+
+so if $x$ and $y$ are independent,
+
+$$h(x,y) = h(x) + h(y)$$
+
+Same can be shown for entropy of independent $x,y$:
+
+$$H(X,Y) = H(X) + H(Y)$$
+
+##
+### Guessing games
+In the game of twenty questions, one player thinks of an object, and the other player attempts to guess what the object is by asking questions that have yes/no answers, for example, ‘is it alive?’, or ‘is it human?’ The aim is to identify the object with as few questions as possible. What is the best strategy for playing this game? For simplicity, imagine that we are playing the rather dull version of twenty questions called ‘sixty-three’.
+
+What’s the smallest number of yes/no questions needed to identify an integer x between 0 and 63?
+
+##
+Intuitively, the best questions successively divide the 64 possibilities into equal sized sets. Six questions suﬃce. One reasonable strategy asks the following questions:
+
+1. is $x\geq 32$?
+2. is $x\mod 32 \geq 16$?
+3. is $x\mod 16 \geq 8$?
+4. is $x\mod 8 \geq 4$?
+5. is $x\mod 4 \geq 2$?
+6. is $x\mod 2 = 1$?
+
+The answers to these questions, if translated from $\{yes,no\}$ to $\{1,0\}$, give the binary expansion of $x$, for example $35 \rightarrow 100011$.
+
+## 
+If we assume that all values are equally likely, and answers to the quastions are independent, so each has Shannon inforamtion content $\log_{2} (1/0.5) = 1$ bit; total Shannon information is always six bits. 
+
+We can view this as a way of encoding x as a binary code.
+
+>Does Shannon information content make sense for ensembles where the ourcomes have unequal proabilites?
+
+##
+### The game of submarine
+
+In this game *submarine*, a simplified and boring version of battleships, each player hides one single submarine on an 8×8 grid. Players take turns guessing a square (like “G3”). The opponent replies with miss, hit, or hit and destroyed. Since there is only one submarine, the game ends as soon as that one square is hit.
+
+```{python}
+import matplotlib.pyplot as plt
+
+fired_at = (3, 4)       
+misses = [(1, 1), (2, 5), (7, 3)]   
+hit = (6, 2)            
+
+fig, ax = plt.subplots(figsize=(4, 4))
+
+for i in range(9):
+    ax.axhline(i, linewidth=1)
+    ax.axvline(i, linewidth=1)
+
+ax.scatter(fired_at[1]-0.5, fired_at[0]-0.5, s=500, facecolors='none')
+
+for r, c in misses:
+    ax.text(c-0.5, r-0.5, '×', ha='center', va='center', fontsize=20)
+
+ax.text(hit[1]-0.5, hit[0]-0.5, 's', ha='center', va='center', fontsize=20)
+
+ax.set_xlim(0, 8)
+ax.set_ylim(8, 0)
+ax.set_xticks(range(9))
+ax.set_yticks(range(9))
+ax.set_aspect('equal')
+plt.show()
+
+```
+
+
+the circle represents the square that is being fired at, and the ×s show squares in which the outcome was a miss, $x= n$; thesubmarine is hit $x= y$ shown by the symbol $s$
+
+
+##
+Each shot made by a player defines an ensemble. The two possible outcomes are $\{y,n\}$, corresponding to a hit and a miss, and their probabilities depend on the state of the board. At the beginning, $P(y) = 1/64$ and $P(n) = 63/64$. At the second shot, if the first shot missed, $P(y) = 1/63$ and
+$P(n) = 62/63$. At the third shot, if the first two shots missed, $P(y) = 1/62$
+and $P(n) = 61/62$.
+
+If we hit the submarine in the first shot, 
+$$h(x) = h_{(1)}(y) = \log_{2} 64 = 6 \text{ bits.} $$
+
+We have learnt the hiding place, which could have been any of 64 squares; so we have, by one lucky binary question, indeed learnt six bits. 
+
+## 
+What if the first shot misses? The Shannon information gained is
+$$
+h_{(1)} = \log_{2}\frac{64}{63} = 0.0227 \text{ bits}. 
+$$
+
+If the second shot also misses, the information gained is
+$$
+h_{(2)} = \log_{2}\frac{63}{62} = 0.0230 \text{ bits}. 
+$$
+
+After missing 32 times (each at a new square), the total Shannon information is
+$$
+\log_{2}\!\left(\frac{64}{63}\right)
++ \log_2\!\left(\frac{63}{62}\right)
++ \cdots
++ \log_2\!\left(\frac{33}{32}\right)
+= 0.0227 + 0.0230 + \cdots + 0.0430
+= 1.0 \text{ bits}. 
+$$
+
+This answer rules out half of the hypotheses, so it gives us one bit.
+
+##
+
+If we hit the submarine on the 49th shot, with 16 squares left, the information gained is
+$$
+h_{(49)}(y)=\log_2 16 = 4.0 \text{ bits}.
+$$
+
+The total Shannon information of all outcomes is
+$$
+\log_2\!\left(\frac{64}{63}\right)
++ \log_2\!\left(\frac{63}{62}\right)
++ \cdots
++ \log_2\!\left(\frac{17}{16}\right)
++ \log_2\!\left(\frac{16}{1}\right)
+= 0.0227 + 0.0230 + \cdots + 0.0874 + 4.0
+= 6.0 \text{ bits}. 
+$$
+
+Thus, once the submarine is located, the total information gained is 6 bits.
+
+More generally, if the hit occurs when $n$ squares remain, the information is
+$$
+\log_2\!\left(\frac{64}{63}\right)
++ \log_2\!\left(\frac{63}{62}\right)
++ \cdots
++ \log_2\!\left(\frac{n+1}{n}\right)
++ \log_2\!\left(\frac{n}{1}\right)
+= \log_2\!\left(\frac{64}{1}\right)
+= 6 \text{ bits}. 
+$$
+
+##
+### Wenglish
+
+Wenglish uses 5-letter "words" chosen uniformly at random from a fixed dictionary of exactly $32{,}768 = 2^{15}$ words. Each word in the dictionary was originally generated by drawing five letters independently (the same distribution as real English).
+Key observed statistics:
+
+Probability of letter a ≈ $0.0625$, so ≈ $2048$ dictionary words start with a (among them, $128$ start with aa, $2$ with az).
+Probability of letter z ≈ $0.001$, so only $32$ words start with z.
+
+Shannon Information Content
+When reading one full word at a time (uniform over the $32{,}768$ words):
+$$H(\text{word}) = \log_2 32{,}768 = 15~\text{bits}$$
+Average per character: $15 / 5 = 3$ bits.
+
+##
+When reading one character at a time:
+
+If the first letter is a:
+$$I(a) = -\log_2 0.0625 \approx 4~\text{bits}$$
+If the first letter is z:
+$$I(z) = -\log_2 0.001 \approx 10~\text{bits}$$
+
+Thus, the information conveyed by each character is highly variable and depends strongly on position. Rare initial letters (like z) carry much more information than common ones (like a), because they narrow down the possible words far more quickly.
+
+This mirrors real English: words beginning with rare letters (e.g., “xylophone”) are identified almost immediately, while words starting with common prefixes (e.g., “pro…”) require many more letters to disambiguate.
+
+
+## 4.2 Data compression
+The preceding examples justify the idea that the Shannon information content of an outcome is a natural measure of its information content. We now discuss the information content of a source by considering how many bits are needed to describe the outcome of an experiment.
+
+If we can show that we can compress data from a particular source into a file of L bits per source symbol and recover the data reliably, then we will say that the average information content of that source is at most L bits per symbol.
+
+##
+### Compression of text files
+A file is composed of a sequence of bytes. A byte is composed of 8 bits and can have a decimal value between 0 and 255. A typical text file is composed of the ASCII character set (decimal values 0 to 127). This character set uses only seven of the eight bits in a byte.
+
+>By how much could the size of a file be reduced given that it is an ASCII file? How would you achieve this reduction?
+
+##
+Intuitively, we may get rid of the redundant bit in each character, reducing the file size by 7/8. 
+
+Most sources of data have further redundancy: English text files use the ASCII characters with non-equal frequency; certain pairs of letters are more probable than others; and entire words can be predicted given the context and a semantic understanding of the text.
+
+One simple way to measure the information in a random variable is to count how many outcomes it can take. If the set of possible outcomes is $A_X$, then $|A_X|$ is the number of outcomes.
+
+##
+
+If we give each outcome a binary label, each label needs
+$$
+\log_2 |A_X|
+$$
+bits (when $|A_X|$ is a power of 2). This leads to the definition:
+
+$$
+H_0(X) = \log_2 |A_X|
+$$
+
+This is the *raw bit content* of $X$. It tells us the minimum number of yes/no questions needed to always determine the outcome.
+
+It is additive: if $X$ and $Y$ are two variables, then the pair $(X, Y)$ has $|A_X||A_Y|$ possible outcomes, so
+$$
+H_0(X, Y) = H_0(X) + H_0(Y).
+$$
+
+This measure ignores probabilities and does not compress data — it simply assigns every outcome a binary string of fixed length.
+
+
+##
+Question:
+
+Could there be a compressor that maps an outcome $x$ to a binary code $c(x)$, and a decompressor that maps $c$ back to $x$, such that every possible outcome is compressed into a binary code of length shorter than $H_0(X)$ bits?
+
+##
+Answer: No
+
+The pigeon-hole principle states: you can’t put 16 pigeons into 15 holes without using one of the holes twice.Similarly, you can’t give $A_X$ outcomes unique binary names of some length $l$ shorter than $\log_{2} |A_X|$ bits.
+
+##
+
+There are only two ways in which a ‘compressor’ can actually compress
+files:
+
+1. A lossy compressor compresses some files, but maps some files to thesame encoding. We’ll assume that the user requires perfect recovery ofthe source file, so the occurrence of one of these confusable files leads to a failure (though in applications such as image compression, lossy compression is viewed as satisfactory). We’ll denote by δthe probability that the source string is one of the confusable files, so a lossy compressor has a probability $\delta$ of failure. If $\delta$ can be made very small then a lossy compressor may be practically useful.
+
+2. A lossless compressor maps all files to diﬀerent encodings; if it shortens some files, it necessarily makes others longer. We try to design the compressor so that the probability that a file is lengthened is very small, and the probability that it is shortened is large.
+
+This chapter only covers lossy compressors
+
+## 4.3 Information Content via Lossy Compression
+
+Instead of assigning names to all possible outcomes, we can tolerate a small failure probability $\delta$ and dramatically reduce the number of bits needed. The key insight: not all outcomes are equally likely, so we can ignore improbable ones.
+
+We rank all outcomes by decreasing probability and include only the most probable ones until their cumulative probability reaches $1-\delta$. This creates the *smallest $\delta$-sufficient subset* $S_\delta$.
+
+The *essential bit content* is defined as:
+$$H_\delta(X) = \log_2 |S_\delta|$$
+
+##
+For an 8-symbol alphabet with probabilities $\{\frac{1}{4}, \frac{1}{4}, \frac{1}{4}, \frac{3}{16}, \frac{1}{64}, \frac{1}{64}, \frac{1}{64}, \frac{1}{64}\}$:
+- With $\delta = 0$: need 3 bits (all 8 symbols)
+- With $\delta = 1/16$: need only 2 bits (top 4 symbols have probability 15/16)
+
+##
+### Extended Ensembles
+
+For sequences of $N$ independent symbols from ensemble $X$, we denote this as $X^N$. The entropy scales linearly: $H(X^N) = NH(X)$.
+
+Binary example with $p_1 = 0.1, p_0 = 0.9$:
+
+For $N=4$, $H_\delta(X^4)$ varies significantly with $\delta$. But as $N$ increases, something remarkable happens: $\frac{1}{N}H_\delta(X^N)$ becomes nearly flat across different values of $\delta$, hovering around $H(X) \approx 0.47$ bits per symbol.
+
+![](neccesarry_files/hxfunc.png)
+
+##
+
+This convergence leads directly to Shannon's source coding theorem.
+
+*Shannon's source coding theorem:* Let $X$ be an ensemble with entropy $H(X) = H$ bits. Given $\epsilon > 0$ and $0 < \delta < 1$, there exists a positive integer $N_0$ such that for $N > N_0$,
+
+$$\left|\frac{1}{N}H_\delta(X^N) - H\right| < \epsilon.$$ (4.21)
+
+## 4.4 Typicality
+
+Consider a binary sequence of length $N=100$ with $p_1 = 0.1$. Most sequences contain approximately 10 ones (within about $\pm 3$). The probability of a sequence with $r$ ones is:
+$$P(x) = p_1^r(1-p_1)^{N-r}$$
+
+For a "typical" sequence with $r \approx 10$:
+$$\log_2 \frac{1}{P(x)} \approx N \sum_i p_i \log_2 \frac{1}{p_i} = NH$$
+
+##
+### The Typical Set $T_{N\beta}$
+
+We define typical sequences as those whose probability is close to $2^{-NH}$:
+$$T_{N\beta} = \left\{x : \left|\frac{1}{N}\log_2\frac{1}{P(x)} - H\right| < \beta\right\}$$
+
+*Key properties:*
+1. Each element has probability between $2^{-N(H+\beta)}$ and $2^{-N(H-\beta)}$
+2. The total number of typical sequences is approximately $2^{NH}$
+3. As $N \to \infty$, the typical set contains almost all the probability mass
+
+##
+### Asymptotic Equipartition Principle
+
+For large $N$, almost all sequences fall into a set of only $2^{NH}$ sequences, each with probability close to $2^{-NH}$. This is a tiny fraction when $H < H_0$:
+$$\frac{2^{NH}}{|A_X|^N} = \frac{2^{NH}}{2^{NH_0}} = 2^{-N(H_0-H)}$$
+
+**Visual intuition:** Imagine all $2^{NH_0}$ possible sequences ranked by probability. The typical set $T_{N\beta}$ occupies a narrow band around probability $2^{-NH}$, yet contains nearly all the probability mass.
+
+---
+
+## 4.5 Proofs
+
+### The Law of Large Numbers
+
+**Chebyshev's inequality:** For a random variable $x$ with mean $\bar{x}$ and variance $\sigma_x^2$:
+$$P((x-\bar{x})^2 \geq \alpha) \leq \frac{\sigma_x^2}{\alpha}$$
+
+**Weak law:** For the average $x = \frac{1}{N}\sum_{n=1}^N h_n$ of $N$ independent random variables with common mean $\bar{h}$ and variance $\sigma_h^2$:
+$$P((x-\bar{h})^2 \geq \alpha) \leq \frac{\sigma_h^2}{\alpha N}$$
+
+No matter how small we want the deviation $\alpha$, we can make the probability arbitrarily small by choosing $N$ large enough.
+
+##
+### Proof of Source Coding Theorem
+
+We apply the law of large numbers to $\frac{1}{N}\log_2\frac{1}{P(x)}$, which has mean $H$ and variance $\sigma^2$.
+
+**Part 1:** Upper bound ($\frac{1}{N}H_\delta(X^N) < H + \epsilon$)
+
+The typical set $T_{N\beta}$ cannot have more than $2^{N(H+\beta)}$ elements (since each has probability at least $2^{-N(H+\beta)}$ and total probability is at most 1). By the law of large numbers:
+$$P(x \in T_{N\beta}) \geq 1 - \frac{\sigma^2}{\beta^2 N}$$
+
+Setting $\beta = \epsilon$ and choosing $N$ large enough ensures $T_{N\beta}$ is a valid $\delta$-sufficient set, proving $H_\delta(X^N) \leq N(H+\epsilon)$.
+
+##
+**Part 2:** Lower bound ($\frac{1}{N}H_\delta(X^N) > H - \epsilon$)
+
+Suppose a smaller subset $S'$ with $|S'| \leq 2^{N(H-2\beta)}$ claims to be $\delta$-sufficient. Its probability is:
+$$P(x \in S') = P(x \in S' \cap T_{N\beta}) + P(x \in S' \cap \overline{T_{N\beta}})$$
+
+The first term is maximized when $S'$ contains the most probable typical elements:
+$$P(x \in S' \cap T_{N\beta}) \leq 2^{N(H-2\beta)} \cdot 2^{-N(H-\beta)} = 2^{-N\beta}$$
+
+The second term is bounded by the probability of being atypical:
+$$P(x \in S' \cap \overline{T_{N\beta}}) \leq \frac{\sigma^2}{\beta^2 N}$$
+
+For large enough $N$, this sum is less than $1-\delta$, contradicting the claim that $S'$ is $\delta$-sufficient.
+
+##
+Both bounds together show that for any $\epsilon > 0$ and $0 < \delta < 1$, there exists $N_0$ such that for all $N > N_0$:
+$$\left|\frac{1}{N}H_\delta(X^N) - H\right| < \epsilon$$
+
+**Interpretation:** The compression rate converges to the entropy $H$ regardless of the acceptable error probability $\delta$ (as long as $0 < \delta < 1$). You cannot compress below $H$ bits per symbol even with high error tolerance, and you don't need to use more than $H$ bits per symbol even with tiny error tolerance.
