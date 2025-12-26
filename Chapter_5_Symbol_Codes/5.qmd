@@ -1,0 +1,222 @@
+---
+title: "5 - Symbol Codes"
+format:
+  revealjs:
+    toc: true
+    smaller: true
+
+---
+##
+
+* **Source coding theorem (symbol codes)**. There exists a variable-length encoding $C$ of an ensemble $X$ such that the average length of an encoded symbol, $L(C,X)$, satisfies $L(C,X) \in [H(X),H(X) + 1)$.The average length is equal to the entropy $H(X)$ only if the codelength for each outcome is equal to its Shannon information content.
+
+* $A^N$ denotes the set of ordered $N$-tuples of elements from the set $A$ 
+
+* $A^+$ denotes the set of all strings of finite length composed of elements from the set $A$
+
+* **A (binary) symbol code** $C$ for an ensemble $X$ is a mapping from the range
+of $x$, $A_X = \{a_1, \dots, a_I\}$, to $\{0,1\}^+$. $c(x)$ will denote the codeword corresponding to $x$, and $l(x)$ will denote its length, with $l_i = l(a_i)$.
+
+* The extended code $C^+$ is a mapping from $A^+_X$ to $\{0,1\}^+$ obtained by concatenation, without punctuation, of the corresponding codewords:
+
+$$c^+ (x_1x_2\dots x_N) = c(x_1)c(x_2)\dots c(x_N).$$
+
+## 5.1 Symbol codes
+
+Requirements for a useful symbol code:
+
+* any encoded string must have a unique decoding
+* the symbol code must be easy to decode
+* the code should achieve as much compression as possible
+
+##
+### Any encoded string must have a unique decoding
+
+A code $C(X)$ is uniquely decodeable if, under the extended code $C^+$, no two distinct strings have the same encoding, i.e.,
+$$ \forall x,y \in A^+_X, x \not= y \rightarrow c^+(x) \not= c^+(y). $$
+
+Example: $\{1000, 0100, 0010, 0001\}$
+
+
+##
+### The symbol code must be easy to decode
+
+Since we don't have separators we need to male sure that no codeword can be a prefix of another codeword. \[A word $c$ is a prefix of another word $d$ if there exists a
+tail string $t$ such that the concatenation $ct$ is identical to $d$. For example, $1$ is
+a prefix of $101$, and so is $10$.\]
+
+A symbol code is called a **prefix code** if no codeword is a prefix of any
+other codeword. A prefix code (also called instantaneous or self-punctuating) can be decoded left to right without looking ahead, since each codeword's end is immediately recognizable, making it uniquely decodeable.
+
+For Example:
+$$\{0,101\} \\ \{0,10,110,111\} \\ \{00,01,10,11\}$$
+
+##
+### The code should achieve as much compression as possible
+
+**The expected length** $L(C,X)$ of a symbol code $C$ for ensemble $X$ is 
+$$L(C,X) = \sum_{x\in A_X}P(x)l(x) \quad \text{or }\quad \\ L(C,X) = \sum_{i=1}^I p_i l_i, \quad\text{where } I=|A_X|$$
+
+##
+
+Let 
+$$ \begin{align} A_X = & \{a, b, c, d\},  \\
+\text{and} \quad P_X = & \{1/2,1/4,1/8,1/8 \} 
+\end{align}
+$$
+and consider the code $C_3$
+
+$$
+\begin{array}{ccccc}
+\hline
+a_i & c(a_i) & p_i & h(p_i) & l_i \\
+\hline
+\text{a} & 0 & 1/2 & 1.0 & 1 \\
+\text{b} & 10 & 1/4 & 2.0 & 2 \\
+\text{c} & 110 & 1/8 & 3.0 & 3 \\
+\text{d} & 111 & 1/8 & 3.0 & 3 \\
+\hline
+\end{array}
+$$
+
+The entropy of $X$ is $1.75$ bits, and the expected length $L(C_3, X)$ is also $1.75$. $C_3$ is a prefix code, therefore uniquely decodable. 
+
+##
+
+Consider codes
+
+$$ C_4 = \{00, 01, 10, 11 \} \quad \text{and} \quad  C_5 = \{ 0, 1, 00, 11\} $$
+
+The expected length $L(C_4,X)$ is $2$ bits. The expected length $L(C_5,X)$ is $1.25$ bits, but the code is not uniquely decodeable.
+
+## 5.2 What limit is imposed by unique decodeability?
+
+In the previous examples, we saw that if we take a code such as $\{00,01,10,11\}$ and shorten one of its codewords, say $00 \rightarrow 0$, then we can keep unique decodability only if we lengthen other codewords. Thus, there seems to be a constrained budget that we can spend on codewords, with shorter codewords being more expensive.
+
+If we build a code purely from
+codewords of length $l$ equal to three, we can have $2^l =8$ codewords and retain unique decodabilty. If we choose all eight of these codewords, we cannot add to the code another codeword of some *other* length and retain unique decodabilty at the same time.   
+
+
+##
+
+Now suppose we include one length-1 codeword '0' with length-3 codewords. For prefix codes, only four length-3 codewords are possible: $\{100,101,110,111\}$. Other code types seem unlikely to allow more. A length-3 codeword appears to cost $2^2$ times less than a length-1 codeword.
+
+Define a total budget of $1$, where each codeword of length $l$ costs $2^-l$. This pricing fits our examples: length-3 codewords cost $1/8$ each, length-1 cost $1/2$ each. Exceeding the budget guarantees non-unique-decodability. However, if
+$$\sum_i 2^{-l_i} \leq 1$$
+the code may be uniquely decodeable. That is Kraft inequality. 
+
+##
+**Kraft inequality**. For any uniquely decodeable code $C(X)$ over the binary alphabet $\{0,1\}$, the codeword lengths must satisfy:
+$$\sum_{i=1}^I 2^{-l_i} \leq 1$$
+where $I = |A_X|$
+
+**Completeness**. If a uniquely decodeable code satisfies the Kraft inequality with equality then it is called a *complete* code.
+
+**Kraft inequality and prefix codes**. Given a set of codeword lengths that satisfy the Kraft inequality, there exists a uniquely decodeable prefix code with these codeword lengths.
+
+##
+
+Proof of Kraft inequality:
+Define $S = \sum_i 2^{-l_i}$. Consider
+
+$$S^N = \left[ \sum_i 2^{-l_i} \right]^N  =  \sum_{i_1=1}^I \sum_{i_2=1}^I \dots \sum_{i_N=1}^I 2^{-(l_{i1} + l_{i2} + \dots +l_{iN})} $$
+
+The quantity in the exponent, $(l_{i1} + l_{i2} + \dots +l_{iN})$, is the length of the encoding of the string $x = a_{i1}a_{i2}\dots a_{iN}$. Introduce an array $A_l$ that counts how many strings $x$ have encoded length $l$. Then, defining $l_\text{min} = \text{min}_i l_i$
+and $l_\text{max} = \text{max}_i l_i$:
+$$S^N = \sum_{l=Nl_\text{min}}^{Nl_\text{max}} 2^{-l}A_l. $$
+
+Assume $C$ is uniquely decodeable, so that for all $x \not= y$, $c^+ (x) \not= c^+(y)$. There are a total of $2^l$ distinct bit strings of length $l$, so it must be the case that $A_l \leq 2^l$. 
+
+$$S^N = \sum_{l=Nl_\text{min}}^{Nl_\text{max}} 2^{-l}A_l \leq  \sum_{l=Nl_\text{min}}^{Nl_\text{max}} 1 \leq Nl_\text{max}$$
+
+Thus $S^N \leq Nl_\text{max} $ for all $N$. If $S$ were greater than $1$, then as $N$ increases, $S^N$ would be an exponentially growing function, and for large enough $N$, an exponential always exceeds a polynomial such as Nl_\text{max}. But our result ($S^N \leq Nl_\text{max} $) is true for any $N$. Therefore $S\leq 1$.
+
+##
+![](files/1.jpeg)
+
+##
+![](files/2.jpeg)
+
+## 5.3 What’s the most compression that we can hope for?
+
+We want to minimize the expected length ($L(C,X)$) of a code. 
+
+**Lower bound on expected length**. The expected length $L(C,X)$ of a uniquely decodeable code is bounded below by $H(X)$.
+
+**Proof**: We define the implicit probabilities $q_i \equiv \frac{2^{-l_i}}{z}$ where 
+$z = \sum_{i'} 2^{-l_{i'}} ,$
+so that
+$l_i = \log \frac{1}{q_i} - \log z .$
+
+We then use Gibbs’ inequality,
+$\sum_i p_i \log \frac{1}{q_i} \ge \sum_i p_i \log \frac{1}{p_i},$ with equality if $q_i = p_i$, and the Kraft inequality $z \le 1$:
+
+$$
+L(C,X) = \sum_i p_i l_i
+       = \sum_i p_i \left( \log \frac{1}{q_i} - \log z \right)
+$$
+
+$$
+\ge \sum_i p_i \log \frac{1}{p_i} - \log z
+$$
+
+$$
+\ge H(X).
+$$
+
+The equality $L(C,X)=H(X)$ is achieved only if the Kraft equality $z = 1$ is satisfied, and if the code lengths satisfy
+$$
+l_i = \log \frac{1}{p_i}.
+$$
+
+##
+The expected length is minimized and is equal to $H(X)$ only if the codelengths are equal to the Shannon information contents $l_i = \log_2(1/pi)$.
+
+Conversely, any choice of codelengths $\{l_i\}$ implicitly defines a probability distribution $\{q_i\}$, $q_i \equiv 2^{−l_i} /z$, for which those codelengths would be the optimal codelengths. If the code is complete then z = 1 and the implicit probabilities are given by $q_i = 2^{−li}$
+
+## 5.4 How much can we compress?
+
+Source coding theorem for symbol codes. For an ensemble $X$ there exists a prefix code $C$ with expected length satisfying 
+$$H(X) \le L(C,X) < H(X) + 1$$ 
+
+**Proof** We set the codelengths to integers slightly larger than the optimum lengths:
+$$
+l_i = \lceil \log_2(1/pi) \rceil 
+$$ 
+
+We check that these codelengths satisfy the Kraft inequality:
+
+$$ \sum_i 2^{-l_i} = \sum_i 2^{\lceil \log_2(1/pi) \rceil} \leq \sum_i 2^{-\log_2(1/p_i)} = \sum_i p_i = 1. 
+$$
+
+The expected length of the code is:
+$$
+L(C,X) = \sum_i 2^{\lceil \log_2(1/pi) \rceil} \leq \sum_i p_i (\log_2(1/p_i) + 1) = H(X) + 1.
+$$
+
+Thus, the expected length satisfies $H(X) \leq L(C,X) < H(X) + 1$, as required.
+
+## 
+
+If we use a code whose lengths are not equal to the optimal codelengths, the average message length will be larger than the entropy.  
+
+If the true probabilities are $\{p_i\}$ and we use a complete code with lengths $l_i$, we can view those lengths as defining implicit probabilities $q_i = 2^{-l_i}$. The average length is
+
+$$L(C,X) = H(X) + \sum_i p_i \log \frac{p_i}{q_i}.$$
+
+## 5.5 Optimal source coding with symbol codes: Huﬀman coding
+
+1. Take the two least probable symbols in the alphabet. These two symbols will be given the longest codewords, which will have equal length, and diﬀer only in the last digit.
+
+2. Combine these two symbols into a single symbol, and repeat.
+
+![](files/3.jpeg)
+
+The codewords are then obtained by concatenating the binary digits in reverse order: $C= \{00,10,11,010,011\}$. The expected length of the
+code is L= 2.30 bits, whereas the entropy is H= 2.2855 bits.
+
+##
+![](files/4.jpeg)
+This code has an expected length of 4.15 bits; the entropy of the ensemble is 4.11 bits.
+
+
